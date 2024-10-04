@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GKShop - GKSHOP BUYABLES </title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        /* =======================
+           CSS Variables
+        ======================= */
+        :root {
+            --primary-bg: #0e0e0e;
+            --secondary-bg: #1a1a1a;
+            --accent-color: #ffffff;
+            --accent-hover: #000000;
+            --text-color: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #ffffff;
+            --modal-bg: rgba(0, 0, 0, 0.8);
+            --font-primary: 'Roboto', sans-serif;
+            --font-secondary: 'Orbitron', sans-serif;
+            --transition-speed: 0.3s;
+        }
+
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: color var(--transition-speed);
+        }
+
+        a:hover {
+            color: var(--accent-hover);
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        button {
+            font-family: var(--font-primary);
+            cursor: pointer;
+            transition: background-color var(--transition-speed), transform 0.2s;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: var(--secondary-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo h1 {
+            font-family: var(--font-secondary);
+            font-size: 2.5em;
+            color: var(--text-color);
+        }
+
+        .logo h1 span {
+            color: var(--accent-color);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+        }
+
+        nav a {
+            font-weight: 500;
+            font-size: 1em;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        /* Hero Section */
+        #hero {
+            background: url('your-hero-image.jpg') center/cover no-repeat;
+            height: 60vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        #hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-bg);
+        }
+
+        #hero .hero-content {
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px 40px;
+            border-radius: 10px;
+            max-width: 800px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        #hero .cta-button {
+            display: inline-block;
+            margin-top: 20px;
+            background-color: var(--accent-color);
+            color: #000;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color var(--transition-speed), transform 0.2s;
+        }
+
+        #hero .cta-button:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Products Section */
+        #products {
+            padding: 60px 40px;
+            background-color: #141414;
+        }
+
+        #products h2 {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 40px;
+            color: var(--text-color);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product {
+            background-color: var(--secondary-bg);
+            border: 2px solid var(--accent-color);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+        }
+
+        .product-icon {
+            font-size: 3em;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .product h3 {
+            font-family: var(--font-secondary);
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .product .price {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .product .description {
+            font-size: 0.95em;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .buy-button {
+            background-color: var(--accent-color);
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color var(--transition-speed), transform 0.2s;
+        }
+
+        .buy-button:hover {
+            background-color: var(--accent-hover);
+            transform: scale(1.05);
+        }
+
+        /* Support Section */
+        #support {
+            padding: 60px 40px;
+            background-color: #141414;
+            text-align: center;
+        }
+
+        #support h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        #support p {
+            font-size: 1em;
+            margin-bottom: 30px;
+            color: var(--text-secondary);
+        }
+
+        .support-button {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--accent-color);
+            color: #000;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color var(--transition-speed), transform 0.2s;
+        }
+
+        .support-button i {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .support-button:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px 40px;
+            background-color: var(--secondary-bg);
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: var(--modal-bg);
+            animation: fadeIn 0.5s;
+        }
+
+        .modal-content {
+            background-color: var(--secondary-bg);
+            margin: 10% auto;
+            padding: 30px 40px;
+            border: 2px solid var(--accent-color);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            position: relative;
+            animation: slideDown 0.5s;
+        }
+
+        .close {
+            color: #fff;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color var(--transition-speed);
+        }
+
+        .close:hover, .close:focus {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .modal-content p {
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .payment-option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .transaction-id input {
+            background-color: #2e2e2e;
+            color: var(--text-color);
+        }
+
+        .confirm-payment {
+            background-color: var(--accent-color);
+            color: #000;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            width: 100%;
+            transition: background-color var(--transition-speed), transform 0.2s;
+        }
+
+        .confirm-payment:hover {
+            background-color: var(--accent-hover);
+            transform: scale(1.02);
+        }
+
+        .payment-note p {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-top: 20px;
+        }
+
+        /* Input Fields */
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border: 1px solid var(--accent-color);
+            border-radius: 5px;
+            background-color: #2e2e2e;
+            color: var(--text-color);
+            font-size: 1em;
+            transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: var(--accent-hover);
+            box-shadow: 0 0 5px var(--accent-hover);
+            outline: none;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Order ID Confirmation */
+        #order-confirmation {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background-color: var(--secondary-bg);
+            border: 2px solid var(--accent-color);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        #order-confirmation h3 {
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>GK<span>Shop</span></h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#support">Support</a></li>
+                <li><a href="#admin" id="admin-link" style="display:none;">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero">
+            <div class="hero-content">
+                <h2>Premium Digital Products</h2>
+                <p>Discover our exclusive collection of digital assets</p>
+                <a href="#products" class="cta-button">Shop Now</a>
+            </div>
+        </section>
+
+        <section id="products">
+            <h2>Our Products</h2>
+            <div class="product-grid">
+                <!-- 1. Site List -->
+                <div class="product" data-name="Site List" data-price="45">
+                    <div class="product-icon"><i class="fas fa-list"></i></div>
+                    <h3>Site List</h3>
+                    <p class="price">$45</p>
+                    <p class="description">A comprehensive list of premium sites for your use.</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+                <!-- 2. Best Bins -->
+                <div class="product" data-name="Best Bins" data-price="5">
+                    <div class="product-icon"><i class="fas fa-box"></i></div>
+                    <h3>Best Bins</h3>
+                    <p class="price">$5</p>
+                    <p class="description">The best bins available, handpicked for quality.</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+                <!-- 3. Backdoor Bundle -->
+                <div class="product" data-name="Backdoor Bundle" data-price="55">
+                    <div class="product-icon"><i class="fas fa-door-open"></i></div>
+                    <h3>Backdoor Bundle</h3>
+                    <p class="price">$55</p>
+                    <p class="description">All the tools you need to access premium content.</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+                <!-- 4. Ultimate Bundle -->
+                <div class="product" data-name="Ultimate Bundle" data-price="85">
+                    <div class="product-icon"><i class="fas fa-cube"></i></div>
+                    <h3>Ultimate Bundle</h3>
+                    <p class="price">$85</p>
+                    <p class="description">The ultimate collection of digital products.</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+                <!-- 5. Chase Personal Checking Log -->
+                <div class="product" data-name="Chase Personal Checking Log" data-price="300">
+                    <div class="product-icon"><i class="fas fa-university"></i></div>
+                    <h3>Chase Personal Checking Log</h3>
+                    <p class="price">$300</p>
+                    <p class="description">Get insights into your financial habits with this log.</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+                <!-- 6. Fidelity Investments Open Up -->
+                <div class="product" data-name="Fidelity Investments Open Up" data-price="120">
+                    <div class="product-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Fidelity Investments Open Up</h3>
+                    <p class="price">$120</p>
+                    <p class="description">Open up your investment potential with this guide.</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+                <!-- 7. PNC Checking Open Up -->
+                <div class="product" data-name="PNC Checking Open Up" data-price="120">
+                    <div class="product-icon"><i class="fas fa-piggy-bank"></i></div>
+                    <h3>PNC Checking Open Up</h3>
+                    <p class="price">$120</p>
+                    <p class="description">Unlock the benefits of a PNC checking account.</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+                <!-- 8. Citi Bank Open Up -->
+                <div class="product" data-name="Citi Bank Open Up" data-price="160">
+                    <div class="product-icon"><i class="fas fa-landmark"></i></div>
+                    <h3>Citi Bank Open Up</h3>
+                    <p class="price">$160</p>
+                    <p class="description">A guide to making the most of Citi Bank services.</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+                <!-- 9. Golden 1 Credit Union -->
+                <div class="product" data-name="Golden 1 Credit Union" data-price="220">
+                    <div class="product-icon"><i class="fas fa-credit-card"></i></div>
+                    <h3>Golden 1 Credit Union</h3>
+                    <p class="price">$220</p>
+                    <p class="description">Join Golden 1 Credit Union for exclusive benefits.</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+                <!-- 10. Non VBV CCs -->
+                <div class="product" data-name="Non VBV CCs" data-price="35">
+                    <div class="product-icon"><i class="fas fa-credit-card"></i></div>
+                    <h3>Non VBV CCs</h3>
+                    <p class="price">$35</p>
+                    <p class="description">Secure your purchases with non-VBV credit cards.</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+                <!-- 11. Fullz/Pros -->
+                <div class="product" data-name="Fullz/Pros" data-price="100">
+                    <div class="product-icon"><i class="fas fa-user-shield"></i></div>
+                    <h3>Fullz/Pros</h3>
+                    <p class="price">$100</p>
+                    <p class="description">Access comprehensive personal data.</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+                <!-- 12. PayPal Logs -->
+                <div class="product" data-name="PayPal Logs" data-price="45">
+                    <div class="product-icon"><i class="fab fa-paypal"></i></div>
+                    <h3>PayPal Logs</h3>
+                    <p class="price">$45</p>
+                    <p class="description">View detailed logs of your PayPal transactions.</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="support">
+            <h2>Customer Support</h2>
+            <p>Need assistance? Our support team is here to help!</p>
+            <a href="https://t.me/gkshopsupport" target="_blank" class="support-button">
+                <i class="fab fa-telegram"></i> Contact Support on Telegram
+            </a>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy;Shop made by https://t.me/Keionx2k  </p>
+    </footer>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Secure Checkout</h2>
+            <p id="product-name"></p>
+            <p id="product-price"></p>
+            <h3>Payment Options</h3>
+            <div class="payment-option">
+                <input type="radio" id="bitcoin-option" name="payment" value="bitcoin">
+                <label for="bitcoin-option"><i class="fab fa-bitcoin"></i> Bitcoin</label>
+            </div>
+            <div class="payment-option">
+                <input type="radio" id="cashapp-option" name="payment" value="cashapp">
+                <label for="cashapp-option"><i class="fas fa-dollar-sign"></i> Cash App</label>
+            </div>
+            <div class="transaction-id">
+                <label for="transaction-id" id="transaction-id-label" style="display: none;">Transaction ID:</label>
+                <input type="text" id="transaction-id" placeholder="Enter Transaction ID" style="display: none;">
+            </div>
+            <div class="transaction-id-cashtag" style="display: none;">
+                <label for="cashtag" id="cashtag-label">Cashtag:</label>
+                <input type="text" id="cashtag" placeholder="Enter Your Cashtag">
+            </div>
+            <div class="payment-note">
+                <p>After sending payment, please contact our support t.me/gkshopsupport with your transaction ID or Cashtag for confirmation and to receive your product.</p>
+            </div>
+            <button class="confirm-payment">Confirm Payment</button>
+            <div id="order-confirmation">
+                <h3>Payment Successful!</h3>
+                <p>Your Order ID: <span id="order-id"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="password-modal" class="modal">
+        <div class="modal-content">
+            <!-- Removed the close button to prevent users from closing the modal -->
+            <!-- <span class="close-password">&times;</span> -->
+            <h2>Enter Password to View Site</h2>
+            <input type="password" id="password-input" placeholder="Enter Password">
+            <button id="submit-password">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        // Encapsulate all functionality within an IIFE to avoid polluting the global scope
+        (() => {
+            // ================================
+            // Utility Functions
+            // ================================
+
+            /**
+             * Selects a single DOM element.
+             * @param {string} selector - The CSS selector to query.
+             * @returns {Element|null} - The first matching element or null.
+             */
+            const $ = (selector) => document.querySelector(selector);
+
+            /**
+             * Selects multiple DOM elements.
+             * @param {string} selector - The CSS selector to query.
+             * @returns {NodeList} - A list of matching elements.
+             */
+            const $$ = (selector) => document.querySelectorAll(selector);
+
+            /**
+             * Generates a unique Order ID.
+             * Format: ORD-YYYYMMDDHHMMSS-RANDOM
+             * @returns {string} - The generated Order ID.
+             */
+            const generateOrderID = () => {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                const random = Math.floor(Math.random() * 1000);
+                return `ORD-${year}${month}${day}${hours}${minutes}${seconds}-${random}`;
+            };
+
+            /**
+             * Validates a Cash App Cashtag.
+             * Cashtag format: Starts with '$' followed by 1-15 alphanumeric characters.
+             * @param {string} cashtag - The cashtag to validate.
+             * @returns {boolean} - True if valid, else false.
+             */
+            const validateCashtag = (cashtag) => {
+                const cashtagRegex = /^\$[a-zA-Z0-9]{1,15}$/;
+                return cashtagRegex.test(cashtag);
+            };
+
+            /**
+             * Validates a Bitcoin Transaction ID.
+             * Transaction ID format: 64-character hexadecimal string.
+             * @param {string} txid - The transaction ID to validate.
+             * @returns {boolean} - True if valid, else false.
+             */
+            const validateBTCTransactionID = (txid) => {
+                const txidRegex = /^[A-Fa-f0-9]{64}$/;
+                return txidRegex.test(txid);
+            };
+
+            // ================================
+            // Password Modal Functionality
+            // ================================
+
+            /**
+             * Handles the password protection modal.
+             */
+            const PasswordModal = (() => {
+                const password = 'Glasskilla23'; // Set the desired password
+                const modal = $('#password-modal');
+                const passwordInput = $('#password-input');
+                const submitButton = $('#submit-password');
+                const mainContent = $('main');
+
+                let attemptCount = 0;
+                const maxAttempts = 3;
+
+                /**
+                 * Initializes the password modal by displaying it on page load.
+                 */
+                const init = () => {
+                    // Display the modal on page load
+                    window.addEventListener('load', () => {
+                        modal.style.display = 'block';
+                        mainContent.style.display = 'none';
+                        passwordInput.focus();
+                    });
+
+                    // Handle password submission
+                    submitButton.addEventListener('click', handlePasswordSubmission);
+                    passwordInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            handlePasswordSubmission();
+                        }
+                    });
+
+                    // Prevent closing the modal by clicking outside
+                    window.addEventListener('click', (event) => {
+                        if (event.target === modal) {
+                            // Do nothing to prevent closing
+                            event.stopPropagation();
+                        }
+                    });
+
+                    // Prevent closing the modal via the Esc key
+                    document.addEventListener('keydown', function(event) {
+                        if (event.key === "Escape") {
+                            if (modal.style.display === 'block') {
+                                event.preventDefault();
+                            }
+                        }
+                    });
+                };
+
+                /**
+                 * Validates the entered password and grants access if correct.
+                 */
+                const handlePasswordSubmission = () => {
+                    const enteredPassword = passwordInput.value.trim();
+                    if (enteredPassword === password) {
+                        modal.style.display = 'none';
+                        mainContent.style.display = 'block';
+                    } else {
+                        attemptCount++;
+                        if (attemptCount >= maxAttempts) {
+                            alert('Maximum attempts reached. You will now be redirected.');
+                            // Redirect to the Access Denied page
+                            window.location.href = 'access-denied.html'; // Change to desired URL
+                        } else {
+                            alert(`Incorrect password. You have ${maxAttempts - attemptCount} attempt(s) left.`);
+                            passwordInput.value = '';
+                            passwordInput.focus();
+                        }
+                    }
+                };
+
+                return { init };
+            })();
+
+            // ================================
+            // Payment Modal Functionality
+            // ================================
+
+            /**
+             * Handles the payment modal interactions.
+             */
+            const PaymentModal = (() => {
+                const modal = $('#payment-modal');
+                const closeButtons = $$('.close');
+                const buyButtons = $$('.buy-button');
+                const productNameElem = $('#product-name');
+                const productPriceElem = $('#product-price');
+                const confirmPaymentButton = $('.confirm-payment');
+                const paymentOptions = $$('input[name="payment"]');
+                const transactionIdLabel = $('#transaction-id-label');
+                const transactionIdInput = $('#transaction-id');
+                const cashtagLabel = $('#cashtag-label');
+                const cashtagInput = $('#cashtag');
+                const transactionIdCashtagDiv = $('.transaction-id-cashtag');
+                const orderConfirmationDiv = $('#order-confirmation');
+                const orderIdSpan = $('#order-id');
+
+                let selectedProduct = null;
+
+                /**
+                 * Initializes the payment modal by setting up event listeners.
+                 */
+                const init = () => {
+                    // Attach event listeners to all Buy Now buttons
+                    buyButtons.forEach(button => {
+                        button.addEventListener('click', handleBuyButtonClick);
+                    });
+
+                    // Attach event listeners to all close buttons within the modal
+                    closeButtons.forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            closeModal();
+                        });
+                    });
+
+                    // Handle clicks outside the modal content to close the modal
+                    window.addEventListener('click', (event) => {
+                        if (event.target === modal) {
+                            closeModal();
+                        }
+                    });
+
+                    // Handle payment method selection
+                    paymentOptions.forEach(option => {
+                        option.addEventListener('change', handlePaymentOptionChange);
+                    });
+
+                    // Handle payment confirmation
+                    confirmPaymentButton.addEventListener('click', handleConfirmPayment);
+                };
+
+                /**
+                 * Handles the click event on a Buy Now button.
+                 * @param {Event} event - The click event.
+                 */
+                const handleBuyButtonClick = (event) => {
+                    const productCard = event.currentTarget.closest('.product');
+                    if (productCard) {
+                        selectedProduct = {
+                            name: productCard.dataset.name,
+                            price: productCard.dataset.price
+                        };
+                        populateModal(selectedProduct);
+                        openModal();
+                    }
+                };
+
+                /**
+                 * Populates the payment modal with the selected product's details.
+                 * @param {Object} product - The selected product.
+                 */
+                const populateModal = (product) => {
+                    productNameElem.textContent = `Product: ${product.name}`;
+                    productPriceElem.textContent = `Price: $${product.price}`;
+                    // Reset payment options
+                    paymentOptions.forEach(option => option.checked = false);
+                    transactionIdInput.style.display = 'none';
+                    transactionIdLabel.style.display = 'none';
+                    cashtagInput.style.display = 'none';
+                    cashtagLabel.style.display = 'none';
+                    transactionIdCashtagDiv.style.display = 'none';
+                    transactionIdInput.value = '';
+                    cashtagInput.value = '';
+                    // Hide order confirmation if previously displayed
+                    orderConfirmationDiv.style.display = 'none';
+                };
+
+                /**
+                 * Opens the payment modal.
+                 */
+                const openModal = () => {
+                    modal.style.display = 'block';
+                };
+
+                /**
+                 * Closes the payment modal.
+                 */
+                const closeModal = () => {
+                    modal.style.display = 'none';
+                };
+
+                /**
+                 * Handles the change event when a payment option is selected.
+                 * @param {Event} event - The change event.
+                 */
+                const handlePaymentOptionChange = (event) => {
+                    const selectedValue = event.target.value;
+                    if (selectedValue === 'cashapp') {
+                        transactionIdCashtagDiv.style.display = 'block';
+                        cashtagLabel.style.display = 'block';
+                        cashtagInput.style.display = 'block';
+                        cashtagInput.focus();
+                    } else if (selectedValue === 'bitcoin') {
+                        transactionIdCashtagDiv.style.display = 'block';
+                        transactionIdLabel.style.display = 'block';
+                        transactionIdInput.style.display = 'block';
+                        transactionIdInput.focus();
+                        cashtagLabel.style.display = 'none';
+                        cashtagInput.style.display = 'none';
+                        cashtagInput.value = '';
+                    }
+                };
+
+                /**
+                 * Handles the payment confirmation process.
+                 */
+                const handleConfirmPayment = () => {
+                    const selectedPayment = document.querySelector('input[name="payment"]:checked');
+                    if (!selectedPayment) {
+                        alert('Please select a payment method.');
+                        return;
+                    }
+
+                    if (selectedPayment.value === 'cashapp') {
+                        const cashtag = cashtagInput.value.trim();
+                        if (!validateCashtag(cashtag)) {
+                            alert('Please enter a valid Cashtag. It should start with "$" followed by 1-15 alphanumeric characters.');
+                            cashtagInput.focus();
+                            return;
+                        }
+                        // Generate Order ID
+                        const orderId = generateOrderID();
+                        // Display Order Confirmation
+                        orderIdSpan.textContent = orderId;
+                        orderConfirmationDiv.style.display = 'block';
+                        // Optionally, you can clear the modal fields or perform other actions
+                        // For demonstration, we'll just show the order ID
+                        alert(`Payment confirmed via Cash App.\nCashtag: ${cashtag}\nOrder ID: ${orderId}\nThank you for your purchase!`);
+                        // Reset modal
+                        closeModal();
+                        // Optionally, reset the form
+                        populateModal(selectedProduct);
+                    } else if (selectedPayment.value === 'bitcoin') {
+                        const txid = transactionIdInput.value.trim();
+                        if (!validateBTCTransactionID(txid)) {
+                            alert('Please enter a valid Bitcoin Transaction ID. It should be a 64-character hexadecimal string.');
+                            transactionIdInput.focus();
+                            return;
+                        }
+                        // Generate Order ID
+                        const orderId = generateOrderID();
+                        // Display Order Confirmation
+                        orderIdSpan.textContent = orderId;
+                        orderConfirmationDiv.style.display = 'block';
+                        // Optionally, you can clear the modal fields or perform other actions
+                        // For demonstration, we'll just show the order ID
+                        alert(`Payment confirmed via Bitcoin.\nTransaction ID: ${txid}\nOrder ID: ${orderId}\nThank you for your purchase!`);
+                        // Reset modal
+                        closeModal();
+                        // Optionally, reset the form
+                        populateModal(selectedProduct);
+                    }
+                };
+
+                return { init };
+            })();
+
+            // ================================
+            // Initialization
+            // ================================
+
+            /**
+             * Initializes all components when the DOM is fully loaded.
+             */
+            const init = () => {
+                PasswordModal.init();
+                PaymentModal.init();
+            };
+
+            // Wait for the DOM to be fully loaded before initializing
+            document.addEventListener('DOMContentLoaded', init);
+        })();
+    </script>
+</body>
+</html>
