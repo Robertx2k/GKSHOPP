@@ -1,302 +1,216 @@
-// scripts.js
+// Variables
+const products = [
+    {
+        id: 1,
+        name: "Product 1",
+        price: "$10",
+        description: "Description for Product 1.",
+        icon: "⭐",
+        comingSoon: false,
+    },
+    {
+        id: 2,
+        name: "Product 2",
+        price: "$20",
+        description: "Description for Product 2.",
+        icon: "🌟",
+        comingSoon: false,
+    },
+    {
+        id: 3,
+        name: "Product 3",
+        price: "$30",
+        description: "Description for Product 3.",
+        icon: "✨",
+        comingSoon: false,
+    },
+    {
+        id: 4,
+        name: "Product 4",
+        price: "$40",
+        description: "Description for Product 4.",
+        icon: "🌈",
+        comingSoon: false,
+    },
+    {
+        id: 5,
+        name: "Product 5",
+        price: "$50",
+        description: "Description for Product 5.",
+        icon: "🎉",
+        comingSoon: true,
+    },
+    {
+        id: 6,
+        name: "Product 6",
+        price: "$60",
+        description: "Description for Product 6.",
+        icon: "🚀",
+        comingSoon: true,
+    },
+    {
+        id: 7,
+        name: "Product 7",
+        price: "$70",
+        description: "Description for Product 7.",
+        icon: "🌌",
+        comingSoon: true,
+    },
+    {
+        id: 8,
+        name: "Product 8",
+        price: "$80",
+        description: "Description for Product 8.",
+        icon: "🌟",
+        comingSoon: true,
+    },
+    {
+        id: 9,
+        name: "Product 9",
+        price: "$90",
+        description: "Description for Product 9.",
+        icon: "✨",
+        comingSoon: true,
+    },
+    {
+        id: 10,
+        name: "Product 10",
+        price: "$100",
+        description: "Description for Product 10.",
+        icon: "🌈",
+        comingSoon: true,
+    },
+];
 
-// Encapsulate all functionality within an IIFE to avoid polluting the global scope
-(() => {
-    // ================================
-    // Utility Functions
-    // ================================
+// Selectors
+const productContainer = document.querySelector("#products .product-grid");
+const passwordModal = document.getElementById("password-modal");
+const passwordInput = document.getElementById("password-input");
+const submitPasswordBtn = document.querySelector(".submit-password");
+const closePasswordModalBtn = document.querySelector(".close-password-modal");
+const modal = document.querySelector(".modal");
+const closeModalBtn = document.querySelector(".close");
+const orderIdInput = document.getElementById("order-id-input");
+const transactionIdInput = document.querySelector(".transaction-id input");
+const cashtagInput = document.querySelector(".cashtag-id input");
+const confirmPaymentBtn = document.querySelector(".confirm-payment");
+const paymentMessage = document.getElementById("payment-message");
 
-    /**
-     * Selects a single DOM element.
-     * @param {string} selector - The CSS selector to query.
-     * @returns {Element|null} - The first matching element or null.
-     */
-    const $ = (selector) => document.querySelector(selector);
+// Password for access
+const validPassword = "keion12!";
+let isPasswordEntered = false;
 
-    /**
-     * Selects multiple DOM elements.
-     * @param {string} selector - The CSS selector to query.
-     * @returns {NodeList} - A list of matching elements.
-     */
-    const $$ = (selector) => document.querySelectorAll(selector);
+// Load Products
+function loadProducts() {
+    products.forEach((product) => {
+        const productDiv = document.createElement("div");
+        productDiv.classList.add("product");
+        productDiv.innerHTML = `
+            <div class="product-icon">${product.icon}</div>
+            <h3>${product.name}</h3>
+            <div class="price">${product.price}</div>
+            <button class="buy-button" ${product.comingSoon ? 'disabled' : ''}>Buy Now</button>
+            <p class="description">${product.description}</p>
+        `;
 
-    /**
-     * Generates a unique order ID.
-     * @returns {string} - A unique order ID.
-     */
-    const generateOrderId = () => {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let orderId = 'ORD-';
-        for (let i = 0; i < 8; i++) {
-            orderId += chars.charAt(Math.floor(Math.random() * chars.length));
+        // Show description on product click
+        productDiv.querySelector(".buy-button").addEventListener("click", () => {
+            showProductModal(product);
+        });
+
+        productContainer.appendChild(productDiv);
+    });
+}
+
+// Show Product Modal
+function showProductModal(product) {
+    const modalContent = `
+        <span class="close" onclick="closeProductModal()">&times;</span>
+        <h2>${product.name}</h2>
+        <p>${product.description}</p>
+        <div class="price">${product.price}</div>
+        <h3>Payment Options:</h3>
+        <p>Send your payment to:</p>
+        <p><strong>CashApp Cashtag:</strong> $yourcashtag</p>
+        <p><strong>Bitcoin Address:</strong> your_btc_address</p>
+        <div class="transaction-id">
+            <label for="transaction-id">Transaction ID:</label>
+            <input type="text" id="transaction-id" placeholder="Enter Transaction ID" />
+        </div>
+        <div class="cashtag-id">
+            <label for="cashtag-id">CashApp Cashtag:</label>
+            <input type="text" id="cashtag-id" placeholder="Enter your CashApp Cashtag" />
+        </div>
+        <button class="confirm-payment">Confirm Payment</button>
+        <p id="payment-message"></p>
+    `;
+    modal.querySelector(".modal-content").innerHTML = modalContent;
+    modal.style.display = "block";
+
+    // Handle payment confirmation
+    confirmPaymentBtn.onclick = () => {
+        const transactionId = transactionIdInput.value;
+        const cashtag = cashtagInput.value;
+
+        if (transactionId && cashtag) {
+            paymentMessage.textContent = "Payment details confirmed. Thank you!";
+        } else {
+            paymentMessage.textContent = "Please enter valid payment details.";
         }
-        return orderId;
     };
+}
 
-    /**
-     * Validates a Cash App cashtag.
-     * @param {string} cashtag - The cashtag to validate.
-     * @returns {boolean} - True if valid, else false.
-     */
-    const validateCashtag = (cashtag) => {
-        const cashtagRegex = /^\$[A-Za-z0-9]{1,15}$/;
-        return cashtagRegex.test(cashtag);
-    };
+// Close Product Modal
+function closeProductModal() {
+    modal.style.display = "none";
+    resetPaymentFields();
+}
 
-    /**
-     * Validates a Bitcoin transaction ID.
-     * @param {string} txId - The transaction ID to validate.
-     * @returns {boolean} - True if valid, else false.
-     */
-    const validateBTCtxId = (txId) => {
-        const btcTxIdRegex = /^[A-Fa-f0-9]{64}$/;
-        return btcTxIdRegex.test(txId);
-    };
+// Reset Payment Fields
+function resetPaymentFields() {
+    transactionIdInput.value = "";
+    cashtagInput.value = "";
+    paymentMessage.textContent = "";
+}
 
-    // ================================
-    // Password Modal Functionality
-    // ================================
+// Open Password Modal
+function openPasswordModal() {
+    passwordModal.style.display = "block";
+}
 
-    /**
-     * Handles the password protection modal.
-     */
-    const PasswordModal = (() => {
-        const password = 'Glasskilla23'; // Set the desired password
-        const modal = $('#password-modal');
-        const passwordInput = $('#password-input');
-        const submitButton = $('#submit-password');
-        const mainContent = $('main');
+// Close Password Modal
+function closePasswordModal() {
+    if (isPasswordEntered) {
+        passwordModal.style.display = "none";
+    } else {
+        alert("Please enter the correct password first!");
+    }
+}
 
-        let attemptCount = 0;
-        const maxAttempts = 3;
+// Submit Password
+submitPasswordBtn.onclick = () => {
+    const enteredPassword = passwordInput.value;
 
-        /**
-         * Initializes the password modal by displaying it on page load.
-         */
-        const init = () => {
-            // Display the modal on page load
-            window.addEventListener('load', () => {
-                modal.style.display = 'block';
-                mainContent.style.display = 'none';
-                passwordInput.focus();
-            });
+    if (enteredPassword === validPassword) {
+        isPasswordEntered = true;
+        passwordModal.style.display = "none";
+        loadProducts();
+    } else {
+        alert("Incorrect password!");
+    }
+};
 
-            // Handle password submission
-            submitButton.addEventListener('click', handlePasswordSubmission);
-            passwordInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    handlePasswordSubmission();
-                }
-            });
+// Close Modal
+closeModalBtn.onclick = () => {
+    if (isPasswordEntered) {
+        closeProductModal();
+    } else {
+        alert("Please enter the correct password first!");
+    }
+};
 
-            // Prevent closing the modal by clicking outside
-            window.addEventListener('click', (event) => {
-                if (event.target === modal) {
-                    // Do nothing to prevent closing
-                }
-            });
+// Close Password Modal on click
+closePasswordModalBtn.onclick = closePasswordModal;
 
-            // Prevent closing the modal via the Esc key
-            document.addEventListener('keydown', function(event) {
-                if (event.key === "Escape") {
-                    if (modal.style.display === 'block') {
-                        event.preventDefault();
-                    }
-                }
-            });
-        };
-
-        /**
-         * Validates the entered password and grants access if correct.
-         */
-        const handlePasswordSubmission = () => {
-            const enteredPassword = passwordInput.value.trim();
-            if (enteredPassword === password) {
-                modal.style.display = 'none';
-                mainContent.style.display = 'block';
-            } else {
-                attemptCount++;
-                if (attemptCount >= maxAttempts) {
-                    alert('Maximum attempts reached. You will now be redirected.');
-                    // Redirect to the Access Denied page
-                    window.location.href = 'access-denied.html'; // Change to desired URL
-                } else {
-                    alert(`Incorrect password. You have ${maxAttempts - attemptCount} attempt(s) left.`);
-                    passwordInput.value = '';
-                    passwordInput.focus();
-                }
-            }
-        };
-
-        return { init };
-    })();
-
-    // ================================
-    // Payment Modal Functionality
-    // ================================
-
-    /**
-     * Handles the payment modal interactions.
-     */
-    const PaymentModal = (() => {
-        const modal = $('#payment-modal');
-        const closeButtons = $$('.close');
-        const buyButtons = $$('.buy-button');
-        const productNameElem = $('#product-name');
-        const productPriceElem = $('#product-price');
-        const confirmPaymentButton = $('.confirm-payment');
-        const paymentOptions = $$('input[name="payment"]');
-        const transactionIdLabel = $('#transaction-id-label');
-        const transactionIdInput = $('#transaction-id');
-
-        let selectedProduct = null;
-
-        /**
-         * Initializes the payment modal by setting up event listeners.
-         */
-        const init = () => {
-            // Attach event listeners to all Buy Now buttons
-            buyButtons.forEach(button => {
-                button.addEventListener('click', handleBuyButtonClick);
-            });
-
-            // Attach event listeners to all close buttons within the modal
-            closeButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    closeModal();
-                });
-            });
-
-            // Handle clicks outside the modal content to close the modal
-            window.addEventListener('click', (event) => {
-                if (event.target === modal) {
-                    closeModal();
-                }
-            });
-
-            // Handle payment method selection
-            paymentOptions.forEach(option => {
-                option.addEventListener('change', handlePaymentOptionChange);
-            });
-
-            // Handle payment confirmation
-            confirmPaymentButton.addEventListener('click', handleConfirmPayment);
-        };
-
-        /**
-         * Handles the click event on a Buy Now button.
-         * @param {Event} event - The click event.
-         */
-        const handleBuyButtonClick = (event) => {
-            const productCard = event.currentTarget.closest('.product');
-            if (productCard) {
-                selectedProduct = {
-                    name: productCard.dataset.name,
-                    price: productCard.dataset.price
-                };
-                populateModal(selectedProduct);
-                openModal();
-            }
-        };
-
-        /**
-         * Populates the payment modal with the selected product's details.
-         * @param {Object} product - The selected product.
-         */
-        const populateModal = (product) => {
-            productNameElem.textContent = `Product: ${product.name}`;
-            productPriceElem.textContent = `Price: $${product.price}`;
-            // Reset payment options
-            paymentOptions.forEach(option => option.checked = false);
-            transactionIdInput.style.display = 'none';
-            transactionIdLabel.style.display = 'none';
-            transactionIdInput.value = '';
-        };
-
-        /**
-         * Opens the payment modal.
-         */
-        const openModal = () => {
-            modal.style.display = 'block';
-        };
-
-        /**
-         * Closes the payment modal.
-         */
-        const closeModal = () => {
-            modal.style.display = 'none';
-        };
-
-        /**
-         * Handles the change event when a payment option is selected.
-         * @param {Event} event - The change event.
-         */
-        const handlePaymentOptionChange = (event) => {
-            const selectedValue = event.target.value;
-            if (selectedValue === 'cashapp') {
-                transactionIdLabel.style.display = 'block';
-                transactionIdInput.style.display = 'block';
-                transactionIdInput.placeholder = 'Enter Your Cashtag (e.g., $YourCashtag)';
-                transactionIdInput.focus();
-            } else if (selectedValue === 'bitcoin') {
-                transactionIdLabel.style.display = 'block';
-                transactionIdInput.style.display = 'block';
-                transactionIdInput.placeholder = 'Enter Bitcoin Transaction ID';
-                transactionIdInput.focus();
-            }
-        };
-
-        /**
-         * Handles the payment confirmation process.
-         */
-        const handleConfirmPayment = () => {
-            const selectedPayment = document.querySelector('input[name="payment"]:checked');
-            const transactionId = transactionIdInput.value.trim();
-
-            if (!selectedPayment) {
-                alert('Please select a payment method.');
-                return;
-            }
-
-            if (selectedPayment.value === 'cashapp') {
-                if (!validateCashtag(transactionId)) {
-                    alert('Please enter a valid Cash App Cashtag (e.g., $YourCashtag).');
-                    transactionIdInput.focus();
-                    return;
-                }
-            } else if (selectedPayment.value === 'bitcoin') {
-                if (!validateBTCtxId(transactionId)) {
-                    alert('Please enter a valid Bitcoin Transaction ID (64 hexadecimal characters).');
-                    transactionIdInput.focus();
-                    return;
-                }
-            }
-
-            // Generate Order ID
-            const orderId = generateOrderId();
-
-            // Display confirmation to the user
-            alert(`Payment confirmed!\nOrder ID: ${orderId}\nThank you for your purchase.`);
-
-            // Optionally, you can redirect the user or reset the form
-            closeModal();
-        };
-
-        return { init };
-    })();
-
-    // ================================
-    // Initialization
-    // ================================
-
-    /**
-     * Initializes all components when the DOM is fully loaded.
-     */
-    const init = () => {
-        PasswordModal.init();
-        PaymentModal.init();
-    };
-
-    // Wait for the DOM to be fully loaded before initializing
-    document.addEventListener('DOMContentLoaded', init);
-})();
+// Load Products on Page Load
+window.onload = openPasswordModal;

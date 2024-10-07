@@ -3,22 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GKShop - GKSHOP BUYABLES </title>
-    <link rel="stylesheet" href="styles.css">
+    <title>GKShop - Premium Digital Products</title>
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- External CSS -->
+    <link rel="stylesheet" href="styles.css">
     <style>
         /* =======================
            CSS Variables
         ======================= */
         :root {
-            --primary-bg: #0e0e0e;
-            --secondary-bg: #1a1a1a;
+            --primary-bg: #414141;
+            --secondary-bg: #000000;
             --accent-color: #ffffff;
-            --accent-hover: #000000;
+            --accent-hover: #ffffff;
             --text-color: #ffffff;
             --text-secondary: #cccccc;
-            --border-color: #ffffff;
+            --border-color: #000000;
             --modal-bg: rgba(0, 0, 0, 0.8);
             --font-primary: 'Roboto', sans-serif;
             --font-secondary: 'Orbitron', sans-serif;
@@ -189,6 +192,7 @@
             padding: 20px;
             text-align: center;
             transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
         }
 
         .product:hover {
@@ -218,6 +222,7 @@
             font-size: 0.95em;
             color: var(--text-secondary);
             margin-bottom: 20px;
+            display: none; /* Hidden by default */
         }
 
         .buy-button {
@@ -233,6 +238,23 @@
         .buy-button:hover {
             background-color: var(--accent-hover);
             transform: scale(1.05);
+        }
+
+        /* Coming Soon Products */
+        .product.coming-soon {
+            background-color: #2e2e2e;
+            border-color: #555;
+            opacity: 0.7;
+        }
+
+        .product.coming-soon .buy-button {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
+        .product.coming-soon .buy-button:hover {
+            background-color: #555;
+            transform: none;
         }
 
         /* Support Section */
@@ -349,6 +371,11 @@
         .transaction-id input {
             background-color: #2e2e2e;
             color: var(--text-color);
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--accent-color);
+            border-radius: 5px;
+            margin-top: 10px;
         }
 
         .confirm-payment {
@@ -360,6 +387,7 @@
             font-weight: bold;
             width: 100%;
             transition: background-color var(--transition-speed), transform 0.2s;
+            margin-top: 20px;
         }
 
         .confirm-payment:hover {
@@ -403,24 +431,98 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
-        /* Order ID Confirmation */
-        #order-confirmation {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            background-color: var(--secondary-bg);
-            border: 2px solid var(--accent-color);
-            border-radius: 10px;
-            margin-top: 20px;
+        /* Admin Orders Table */
+        #admin-orders-table th, #admin-orders-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--accent-color);
         }
 
-        #order-confirmation h3 {
+        #admin-orders-table th {
+            background-color: var(--accent-color);
+            color: #000;
+        }
+
+        #admin-orders-table tr:hover {
+            background-color: #333;
+        }
+
+        /* Additional Styles */
+
+        /* Close Button Styling */
+        .modal .close {
+            color: #fff;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color var(--transition-speed);
+        }
+
+        .modal .close:hover, .modal .close:focus {
             color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        /* Payment Instructions Styling */
+        #payment-instructions p {
+            color: var(--text-color);
             margin-bottom: 10px;
+        }
+
+        #payment-instructions strong {
+            color: var(--accent-color);
         }
     </style>
 </head>
 <body>
+    <!-- =======================
+           Password Modal
+    ======================== -->
+    <div id="password-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="password-close">&times;</span> <!-- Added X button -->
+            <h2>Enter Password to View Site</h2>
+            <input type="password" id="password-input" placeholder="Enter Password">
+            <button id="submit-password">Submit</button>
+        </div>
+    </div>
+
+    <!-- =======================
+           Admin Modal
+    ======================== -->
+    <div id="admin-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="admin-close">&times;</span>
+            <h2>Admin Login</h2>
+            <input type="password" id="admin-password-input" placeholder="Enter Admin Password">
+            <button id="admin-submit-password">Login</button>
+            <div id="admin-content" style="display:none; margin-top:20px;">
+                <h3>Orders</h3>
+                <table id="admin-orders-table" border="1" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>User IP</th>
+                            <th>Payment Method</th>
+                            <th>Transaction/Cashtag</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Orders will be populated here via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- =======================
+           Header
+    ======================== -->
     <header>
         <div class="logo">
             <h1>GK<span>Shop</span></h1>
@@ -430,22 +532,31 @@
                 <li><a href="#hero">Home</a></li>
                 <li><a href="#products">Products</a></li>
                 <li><a href="#support">Support</a></li>
-                <li><a href="#admin" id="admin-link" style="display:none;">Admin</a></li>
+                <li><a href="#" id="admin-link">Admin</a></li>
             </ul>
         </nav>
     </header>
 
+    <!-- =======================
+           Main Content
+    ======================== -->
     <main>
+        <!-- =======================
+               Hero Section
+        ======================== -->
         <section id="hero">
             <div class="hero-content">
-                <h2>Premium Digital Products</h2>
-                <p>Discover our exclusive collection of digital assets</p>
-                <a href="#products" class="cta-button">Shop Now</a>
+                <h2>Welcome to GKSHOP </h2>
+                <p>Made by Keionx2k</p>
+                <p>Owned by Punch4riches<p></p>
             </div>
         </section>
 
+        <!-- =======================
+               Products Section
+        ======================== -->
         <section id="products">
-            <h2>Our Products</h2>
+            <h2>My Selection</h2>
             <div class="product-grid">
                 <!-- 1. Site List -->
                 <div class="product" data-name="Site List" data-price="45">
@@ -543,9 +654,57 @@
                     <p class="description">View detailed logs of your PayPal transactions.</p>
                     <button class="buy-button">Buy Now</button>
                 </div>
+
+                <!-- 13. Coming Soon Product 1 -->
+                <div class="product coming-soon">
+                    <div class="product-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <h3>Product Name 13</h3>
+                    <p class="price">Coming Soon</p>
+                    <p class="description">Description for Product 13.</p>
+                    <button class="buy-button" disabled>Coming Soon</button>
+                </div>
+
+                <!-- 14. Coming Soon Product 2 -->
+                <div class="product coming-soon">
+                    <div class="product-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <h3>Product Name 14</h3>
+                    <p class="price">Coming Soon</p>
+                    <p class="description">Description for Product 14.</p>
+                    <button class="buy-button" disabled>Coming Soon</button>
+                </div>
+
+                <!-- 15. Coming Soon Product 3 -->
+                <div class="product coming-soon">
+                    <div class="product-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <h3>Product Name 15</h3>
+                    <p class="price">Coming Soon</p>
+                    <p class="description">Description for Product 15.</p>
+                    <button class="buy-button" disabled>Coming Soon</button>
+                </div>
+
+                <!-- 16. Coming Soon Product 4 -->
+                <div class="product coming-soon">
+                    <div class="product-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <h3>Product Name 16</h3>
+                    <p class="price">Coming Soon</p>
+                    <p class="description">Description for Product 16.</p>
+                    <button class="buy-button" disabled>Coming Soon</button>
+                </div>
+
+                <!-- 17. Coming Soon Product 5 -->
+                <div class="product coming-soon">
+                    <div class="product-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <h3>Product Name 17</h3>
+                    <p class="price">Coming Soon</p>
+                    <p class="description">Description for Product 17.</p>
+                    <button class="buy-button" disabled>Coming Soon</button>
+                </div>
             </div>
         </section>
 
+        <!-- =======================
+               Support Section
+        ======================== -->
         <section id="support">
             <h2>Customer Support</h2>
             <p>Need assistance? Our support team is here to help!</p>
@@ -555,14 +714,19 @@
         </section>
     </main>
 
+    <!-- =======================
+           Footer
+    ======================== -->
     <footer>
-        <p>&copy;Shop made by https://t.me/Keionx2k  </p>
+        <p>&copy; 2024 GKShop. All rights reserved.</p>
     </footer>
 
-    <!-- Payment Modal -->
+    <!-- =======================
+           Payment Modal
+    ======================== -->
     <div id="payment-modal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close" id="payment-close">&times;</span>
             <h2>Secure Checkout</h2>
             <p id="product-name"></p>
             <p id="product-price"></p>
@@ -575,373 +739,411 @@
                 <input type="radio" id="cashapp-option" name="payment" value="cashapp">
                 <label for="cashapp-option"><i class="fas fa-dollar-sign"></i> Cash App</label>
             </div>
-            <div class="transaction-id">
-                <label for="transaction-id" id="transaction-id-label" style="display: none;">Transaction ID:</label>
-                <input type="text" id="transaction-id" placeholder="Enter Transaction ID" style="display: none;">
+            <div id="payment-instructions" style="display:none; margin-top:20px;">
+                <!-- Payment instructions will be inserted here via JavaScript -->
             </div>
-            <div class="transaction-id-cashtag" style="display: none;">
-                <label for="cashtag" id="cashtag-label">Cashtag:</label>
-                <input type="text" id="cashtag" placeholder="Enter Your Cashtag">
+            <div class="transaction-id">
+                <label for="transaction-id" id="transaction-id-label" style="display: none;">Transaction ID / Cashtag:</label>
+                <input type="text" id="transaction-id" placeholder="Enter Transaction ID / Cashtag" style="display: none;">
             </div>
             <div class="payment-note">
-                <p>After sending payment, please contact our support t.me/gkshopsupport with your transaction ID or Cashtag for confirmation and to receive your product.</p>
+                <p>After sending payment, please contact our support on "https://t.me/gkshopsupport" with your transaction ID or cashtag for confirmation and to receive your product.</p>
             </div>
             <button class="confirm-payment">Confirm Payment</button>
-            <div id="order-confirmation">
-                <h3>Payment Successful!</h3>
-                <p>Your Order ID: <span id="order-id"></span></p>
-            </div>
         </div>
     </div>
 
-    <!-- Password Modal -->
-    <div id="password-modal" class="modal">
-        <div class="modal-content">
-            <!-- Removed the close button to prevent users from closing the modal -->
-            <!-- <span class="close-password">&times;</span> -->
-            <h2>Enter Password to View Site</h2>
-            <input type="password" id="password-input" placeholder="Enter Password">
-            <button id="submit-password">Submit</button>
-        </div>
-    </div>
-
+    <!-- =======================
+           JavaScript
+    ======================== -->
     <script>
-        // Encapsulate all functionality within an IIFE to avoid polluting the global scope
-        (() => {
-            // ================================
-            // Utility Functions
-            // ================================
+        // scripts.js
 
-            /**
-             * Selects a single DOM element.
-             * @param {string} selector - The CSS selector to query.
-             * @returns {Element|null} - The first matching element or null.
-             */
-            const $ = (selector) => document.querySelector(selector);
+        document.addEventListener('DOMContentLoaded', () => {
+            // Password Protection Elements
+            const passwordModal = document.getElementById('password-modal');
+            const passwordInput = document.getElementById('password-input');
+            const submitPassword = document.getElementById('submit-password');
+            const passwordClose = document.getElementById('password-close'); // X button
+            const mainContent = document.querySelector('main');
 
-            /**
-             * Selects multiple DOM elements.
-             * @param {string} selector - The CSS selector to query.
-             * @returns {NodeList} - A list of matching elements.
-             */
-            const $$ = (selector) => document.querySelectorAll(selector);
+            let attemptCount = 0;
+            const maxAttempts = 3;
+            const sitePassword = 'Glasskilla23'; // Set your main site password
 
-            /**
-             * Generates a unique Order ID.
-             * Format: ORD-YYYYMMDDHHMMSS-RANDOM
-             * @returns {string} - The generated Order ID.
-             */
-            const generateOrderID = () => {
-                const now = new Date();
-                const year = now.getFullYear();
-                const month = String(now.getMonth() + 1).padStart(2, '0');
-                const day = String(now.getDate()).padStart(2, '0');
-                const hours = String(now.getHours()).padStart(2, '0');
-                const minutes = String(now.getMinutes()).padStart(2, '0');
-                const seconds = String(now.getSeconds()).padStart(2, '0');
-                const random = Math.floor(Math.random() * 1000);
-                return `ORD-${year}${month}${day}${hours}${minutes}${seconds}-${random}`;
+            // Admin Panel Elements
+            const adminLink = document.getElementById('admin-link');
+            const adminModal = document.getElementById('admin-modal');
+            const adminClose = document.getElementById('admin-close');
+            const adminPasswordInput = document.getElementById('admin-password-input');
+            const adminSubmitPassword = document.getElementById('admin-submit-password');
+            const adminContent = document.getElementById('admin-content');
+            const adminOrdersTableBody = document.querySelector('#admin-orders-table tbody');
+            const adminPassword = 'keion12!'; // Set your admin password
+
+            // Payment Modal Elements
+            const paymentModal = document.getElementById('payment-modal');
+            const closePaymentModal = document.getElementById('payment-close');
+            const buyButtons = document.querySelectorAll('.buy-button');
+            const productName = document.getElementById('product-name');
+            const productPrice = document.getElementById('product-price');
+            const paymentOptions = document.getElementsByName('payment');
+            const transactionIdLabel = document.getElementById('transaction-id-label');
+            const transactionIdInput = document.getElementById('transaction-id');
+            const paymentInstructions = document.getElementById('payment-instructions');
+            const confirmPaymentButton = document.querySelector('.confirm-payment');
+
+            let selectedProduct = {};
+
+            // --------------------------
+            // Password Protection
+            // --------------------------
+
+            // Display the password modal on page load
+            window.onload = () => {
+                passwordModal.style.display = 'block';
+                mainContent.style.display = 'none';
+                passwordInput.focus();
             };
 
-            /**
-             * Validates a Cash App Cashtag.
-             * Cashtag format: Starts with '$' followed by 1-15 alphanumeric characters.
-             * @param {string} cashtag - The cashtag to validate.
-             * @returns {boolean} - True if valid, else false.
-             */
-            const validateCashtag = (cashtag) => {
-                const cashtagRegex = /^\$[a-zA-Z0-9]{1,15}$/;
-                return cashtagRegex.test(cashtag);
-            };
-
-            /**
-             * Validates a Bitcoin Transaction ID.
-             * Transaction ID format: 64-character hexadecimal string.
-             * @param {string} txid - The transaction ID to validate.
-             * @returns {boolean} - True if valid, else false.
-             */
-            const validateBTCTransactionID = (txid) => {
-                const txidRegex = /^[A-Fa-f0-9]{64}$/;
-                return txidRegex.test(txid);
-            };
-
-            // ================================
-            // Password Modal Functionality
-            // ================================
-
-            /**
-             * Handles the password protection modal.
-             */
-            const PasswordModal = (() => {
-                const password = 'Glasskilla23'; // Set the desired password
-                const modal = $('#password-modal');
-                const passwordInput = $('#password-input');
-                const submitButton = $('#submit-password');
-                const mainContent = $('main');
-
-                let attemptCount = 0;
-                const maxAttempts = 3;
-
-                /**
-                 * Initializes the password modal by displaying it on page load.
-                 */
-                const init = () => {
-                    // Display the modal on page load
-                    window.addEventListener('load', () => {
-                        modal.style.display = 'block';
-                        mainContent.style.display = 'none';
-                        passwordInput.focus();
-                    });
-
-                    // Handle password submission
-                    submitButton.addEventListener('click', handlePasswordSubmission);
-                    passwordInput.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            handlePasswordSubmission();
-                        }
-                    });
-
-                    // Prevent closing the modal by clicking outside
-                    window.addEventListener('click', (event) => {
-                        if (event.target === modal) {
-                            // Do nothing to prevent closing
-                            event.stopPropagation();
-                        }
-                    });
-
-                    // Prevent closing the modal via the Esc key
-                    document.addEventListener('keydown', function(event) {
-                        if (event.key === "Escape") {
-                            if (modal.style.display === 'block') {
-                                event.preventDefault();
-                            }
-                        }
-                    });
-                };
-
-                /**
-                 * Validates the entered password and grants access if correct.
-                 */
-                const handlePasswordSubmission = () => {
-                    const enteredPassword = passwordInput.value.trim();
-                    if (enteredPassword === password) {
-                        modal.style.display = 'none';
-                        mainContent.style.display = 'block';
+            // Handle Password Submission
+            submitPassword.addEventListener('click', () => {
+                const enteredPassword = passwordInput.value.trim();
+                if (enteredPassword === sitePassword) {
+                    passwordModal.style.display = 'none';
+                    mainContent.style.display = 'block';
+                } else {
+                    attemptCount++;
+                    if (attemptCount >= maxAttempts) {
+                        alert('Maximum attempts reached. You will now be redirected.');
+                        window.location.href = 'access-denied.html';
                     } else {
-                        attemptCount++;
-                        if (attemptCount >= maxAttempts) {
-                            alert('Maximum attempts reached. You will now be redirected.');
-                            // Redirect to the Access Denied page
-                            window.location.href = 'access-denied.html'; // Change to desired URL
-                        } else {
-                            alert(`Incorrect password. You have ${maxAttempts - attemptCount} attempt(s) left.`);
-                            passwordInput.value = '';
-                            passwordInput.focus();
-                        }
+                        alert(`Incorrect password. You have ${maxAttempts - attemptCount} attempt(s) left.`);
+                        passwordInput.value = '';
+                        passwordInput.focus();
                     }
-                };
+                }
+            });
 
-                return { init };
-            })();
+            // Allow closing the password modal with the X button
+            passwordClose.addEventListener('click', () => {
+                // Only allow closing if the correct password has been entered
+                if (passwordModal.style.display === 'block' && passwordInput.value.trim() === sitePassword) {
+                    passwordModal.style.display = 'none';
+                    mainContent.style.display = 'block';
+                } else {
+                    alert('Please enter the correct password to access the site.');
+                }
+            });
 
-            // ================================
-            // Payment Modal Functionality
-            // ================================
+            // Prevent closing the password modal by clicking outside of it
+            window.addEventListener('click', (event) => {
+                if (event.target === passwordModal) {
+                    // Do nothing to prevent closing
+                }
+            });
 
-            /**
-             * Handles the payment modal interactions.
-             */
-            const PaymentModal = (() => {
-                const modal = $('#payment-modal');
-                const closeButtons = $$('.close');
-                const buyButtons = $$('.buy-button');
-                const productNameElem = $('#product-name');
-                const productPriceElem = $('#product-price');
-                const confirmPaymentButton = $('.confirm-payment');
-                const paymentOptions = $$('input[name="payment"]');
-                const transactionIdLabel = $('#transaction-id-label');
-                const transactionIdInput = $('#transaction-id');
-                const cashtagLabel = $('#cashtag-label');
-                const cashtagInput = $('#cashtag');
-                const transactionIdCashtagDiv = $('.transaction-id-cashtag');
-                const orderConfirmationDiv = $('#order-confirmation');
-                const orderIdSpan = $('#order-id');
+            // Prevent closing the password modal via the Esc key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === "Escape") {
+                    if (passwordModal.style.display === 'block') {
+                        event.preventDefault();
+                    }
+                }
+            });
 
-                let selectedProduct = null;
+            // --------------------------
+            // Admin Panel
+            // --------------------------
 
-                /**
-                 * Initializes the payment modal by setting up event listeners.
-                 */
-                const init = () => {
-                    // Attach event listeners to all Buy Now buttons
-                    buyButtons.forEach(button => {
-                        button.addEventListener('click', handleBuyButtonClick);
-                    });
+            // Open Admin Modal
+            adminLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                adminModal.style.display = 'block';
+                adminPasswordInput.value = '';
+                adminContent.style.display = 'none';
+                adminPasswordInput.focus();
+            });
 
-                    // Attach event listeners to all close buttons within the modal
-                    closeButtons.forEach(btn => {
-                        btn.addEventListener('click', () => {
-                            closeModal();
+            // Close Admin Modal
+            adminClose.addEventListener('click', () => {
+                adminModal.style.display = 'none';
+            });
+
+            // Prevent closing admin modal by clicking outside
+            window.addEventListener('click', (event) => {
+                if (event.target === adminModal) {
+                    adminModal.style.display = 'none';
+                }
+            });
+
+            // Handle Admin Password Submission
+            adminSubmitPassword.addEventListener('click', () => {
+                const enteredAdminPassword = adminPasswordInput.value.trim();
+                if (enteredAdminPassword === adminPassword) {
+                    adminContent.style.display = 'block';
+                    fetchOrders();
+                } else {
+                    alert('Incorrect admin password.');
+                    adminPasswordInput.value = '';
+                    adminPasswordInput.focus();
+                }
+            });
+
+            // Function to Fetch and Display Orders in Admin Panel
+            function fetchOrders() {
+                // Fetch orders from localStorage
+                const orders = JSON.parse(localStorage.getItem('orders')) || [];
+
+                // Clear existing table rows
+                adminOrdersTableBody.innerHTML = '';
+
+                if (orders.length === 0) {
+                    const row = document.createElement('tr');
+                    const cell = document.createElement('td');
+                    cell.colSpan = 6;
+                    cell.style.textAlign = 'center';
+                    cell.innerText = 'No orders have been placed yet.';
+                    row.appendChild(cell);
+                    adminOrdersTableBody.appendChild(row);
+                    return;
+                }
+
+                // Populate table with orders
+                orders.forEach(order => {
+                    const row = document.createElement('tr');
+
+                    const orderIdCell = document.createElement('td');
+                    orderIdCell.innerText = order.orderId;
+                    row.appendChild(orderIdCell);
+
+                    const productCell = document.createElement('td');
+                    productCell.innerText = order.product;
+                    row.appendChild(productCell);
+
+                    const priceCell = document.createElement('td');
+                    priceCell.innerText = `$${order.price}`;
+                    row.appendChild(priceCell);
+
+                    const userIPCell = document.createElement('td');
+                    userIPCell.innerText = order.userIP;
+                    row.appendChild(userIPCell);
+
+                    const paymentMethodCell = document.createElement('td');
+                    paymentMethodCell.innerText = order.paymentMethod;
+                    row.appendChild(paymentMethodCell);
+
+                    const transactionCell = document.createElement('td');
+                    transactionCell.innerText = order.transactionId;
+                    row.appendChild(transactionCell);
+
+                    adminOrdersTableBody.appendChild(row);
+                });
+            }
+
+            // --------------------------
+            // Product Interaction
+            // --------------------------
+
+            // Show Description and "Go to Payment" Button on Buy Now Click
+            buyButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const product = button.closest('.product');
+                    const description = product.querySelector('.description');
+
+                    if (description.style.display === 'block') {
+                        // Hide description and "Go to Payment" button if already visible
+                        description.style.display = 'none';
+                        if (product.querySelector('.go-to-payment')) {
+                            product.querySelector('.go-to-payment').remove();
+                        }
+                    } else {
+                        // Show description
+                        description.style.display = 'block';
+
+                        // Create "Go to Payment" button
+                        const goToPaymentButton = document.createElement('button');
+                        goToPaymentButton.classList.add('go-to-payment');
+                        goToPaymentButton.innerText = 'Go to Payment';
+                        goToPaymentButton.style.marginTop = '10px';
+                        goToPaymentButton.style.backgroundColor = 'var(--accent-hover)';
+                        goToPaymentButton.style.color = '#000';
+                        goToPaymentButton.style.padding = '8px 15px';
+                        goToPaymentButton.style.border = 'none';
+                        goToPaymentButton.style.borderRadius = '5px';
+                        goToPaymentButton.style.cursor = 'pointer';
+                        goToPaymentButton.style.transition = 'background-color var(--transition-speed), transform 0.2s';
+
+                        // Handle "Go to Payment" button click
+                        goToPaymentButton.addEventListener('click', () => {
+                            openPaymentModal(product);
                         });
-                    });
 
-                    // Handle clicks outside the modal content to close the modal
-                    window.addEventListener('click', (event) => {
-                        if (event.target === modal) {
-                            closeModal();
-                        }
-                    });
-
-                    // Handle payment method selection
-                    paymentOptions.forEach(option => {
-                        option.addEventListener('change', handlePaymentOptionChange);
-                    });
-
-                    // Handle payment confirmation
-                    confirmPaymentButton.addEventListener('click', handleConfirmPayment);
-                };
-
-                /**
-                 * Handles the click event on a Buy Now button.
-                 * @param {Event} event - The click event.
-                 */
-                const handleBuyButtonClick = (event) => {
-                    const productCard = event.currentTarget.closest('.product');
-                    if (productCard) {
-                        selectedProduct = {
-                            name: productCard.dataset.name,
-                            price: productCard.dataset.price
-                        };
-                        populateModal(selectedProduct);
-                        openModal();
+                        product.appendChild(goToPaymentButton);
                     }
-                };
+                });
+            });
 
-                /**
-                 * Populates the payment modal with the selected product's details.
-                 * @param {Object} product - The selected product.
-                 */
-                const populateModal = (product) => {
-                    productNameElem.textContent = `Product: ${product.name}`;
-                    productPriceElem.textContent = `Price: $${product.price}`;
-                    // Reset payment options
-                    paymentOptions.forEach(option => option.checked = false);
-                    transactionIdInput.style.display = 'none';
-                    transactionIdLabel.style.display = 'none';
-                    cashtagInput.style.display = 'none';
-                    cashtagLabel.style.display = 'none';
-                    transactionIdCashtagDiv.style.display = 'none';
-                    transactionIdInput.value = '';
-                    cashtagInput.value = '';
-                    // Hide order confirmation if previously displayed
-                    orderConfirmationDiv.style.display = 'none';
-                };
+            // Function to Open Payment Modal with Selected Product
+            function openPaymentModal(product) {
+                const name = product.getAttribute('data-name');
+                const price = product.getAttribute('data-price');
 
-                /**
-                 * Opens the payment modal.
-                 */
-                const openModal = () => {
-                    modal.style.display = 'block';
-                };
+                selectedProduct = { name, price };
 
-                /**
-                 * Closes the payment modal.
-                 */
-                const closeModal = () => {
-                    modal.style.display = 'none';
-                };
+                productName.innerText = `Product: ${name}`;
+                productPrice.innerText = `Price: $${price}`;
 
-                /**
-                 * Handles the change event when a payment option is selected.
-                 * @param {Event} event - The change event.
-                 */
-                const handlePaymentOptionChange = (event) => {
-                    const selectedValue = event.target.value;
-                    if (selectedValue === 'cashapp') {
-                        transactionIdCashtagDiv.style.display = 'block';
-                        cashtagLabel.style.display = 'block';
-                        cashtagInput.style.display = 'block';
-                        cashtagInput.focus();
-                    } else if (selectedValue === 'bitcoin') {
-                        transactionIdCashtagDiv.style.display = 'block';
+                // Show payment modal
+                paymentModal.style.display = 'block';
+            }
+
+            // Close Payment Modal
+            closePaymentModal.addEventListener('click', () => {
+                paymentModal.style.display = 'none';
+                resetPaymentModal();
+            });
+
+            // Prevent closing payment modal by clicking outside
+            window.addEventListener('click', (event) => {
+                if (event.target === paymentModal) {
+                    // Do nothing to prevent closing
+                }
+            });
+
+            // Prevent closing payment modal via Esc key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === "Escape") {
+                    if (paymentModal.style.display === 'block') {
+                        event.preventDefault();
+                    }
+                }
+            });
+
+            // Handle Payment Option Selection
+            paymentOptions.forEach(option => {
+                option.addEventListener('change', () => {
+                    if (option.value === 'bitcoin') {
+                        paymentInstructions.innerHTML = `
+                            <p>Please send <strong>$${selectedProduct.price}</strong> worth of Bitcoin to the following address:</p>
+                            <p><strong>Bitcoin Address:</strong> 3LUNejTyknMDJ7HsmmZq75EniQphf9k6mU</p>
+                            <p>Once you've sent the payment, enter your <strong>Transaction ID</strong> below.</p>
+                        `;
+                        paymentInstructions.style.display = 'block';
+                        transactionIdLabel.innerText = 'Bitcoin Transaction ID:';
                         transactionIdLabel.style.display = 'block';
+                        transactionIdInput.placeholder = 'Enter Bitcoin Transaction ID';
                         transactionIdInput.style.display = 'block';
-                        transactionIdInput.focus();
-                        cashtagLabel.style.display = 'none';
-                        cashtagInput.style.display = 'none';
-                        cashtagInput.value = '';
+                    } else if (option.value === 'cashapp') {
+                        paymentInstructions.innerHTML = `
+                            <p>Please send <strong>$${selectedProduct.price}</strong> via Cash App to the following cashtag:</p>
+                            <p><strong>Cash App Cashtag:</strong> $Punch4riches</p>
+                            <p>Once you've sent the payment, enter your <strong>Cash App Cashtag</strong> below.</p>
+                        `;
+                        paymentInstructions.style.display = 'block';
+                        transactionIdLabel.innerText = 'Cash App Cashtag:';
+                        transactionIdLabel.style.display = 'block';
+                        transactionIdInput.placeholder = 'Enter Cash App Cashtag (e.g., $YourCashtag)';
+                        transactionIdInput.style.display = 'block';
                     }
-                };
+                });
+            });
 
-                /**
-                 * Handles the payment confirmation process.
-                 */
-                const handleConfirmPayment = () => {
-                    const selectedPayment = document.querySelector('input[name="payment"]:checked');
-                    if (!selectedPayment) {
-                        alert('Please select a payment method.');
+            // Handle Confirm Payment
+            confirmPaymentButton.addEventListener('click', async () => {
+                const paymentMethod = Array.from(paymentOptions).find(opt => opt.checked)?.value;
+                const transactionId = transactionIdInput.value.trim();
+
+                if (!paymentMethod) {
+                    alert('Please select a payment method.');
+                    return;
+                }
+
+                if (paymentMethod === 'bitcoin') {
+                    const btcTxIdRegex = /^[A-Fa-f0-9]{64}$/;
+                    if (!btcTxIdRegex.test(transactionId)) {
+                        alert('Please enter a valid Bitcoin Transaction ID (64 hexadecimal characters).');
                         return;
                     }
-
-                    if (selectedPayment.value === 'cashapp') {
-                        const cashtag = cashtagInput.value.trim();
-                        if (!validateCashtag(cashtag)) {
-                            alert('Please enter a valid Cashtag. It should start with "$" followed by 1-15 alphanumeric characters.');
-                            cashtagInput.focus();
-                            return;
-                        }
-                        // Generate Order ID
-                        const orderId = generateOrderID();
-                        // Display Order Confirmation
-                        orderIdSpan.textContent = orderId;
-                        orderConfirmationDiv.style.display = 'block';
-                        // Optionally, you can clear the modal fields or perform other actions
-                        // For demonstration, we'll just show the order ID
-                        alert(`Payment confirmed via Cash App.\nCashtag: ${cashtag}\nOrder ID: ${orderId}\nThank you for your purchase!`);
-                        // Reset modal
-                        closeModal();
-                        // Optionally, reset the form
-                        populateModal(selectedProduct);
-                    } else if (selectedPayment.value === 'bitcoin') {
-                        const txid = transactionIdInput.value.trim();
-                        if (!validateBTCTransactionID(txid)) {
-                            alert('Please enter a valid Bitcoin Transaction ID. It should be a 64-character hexadecimal string.');
-                            transactionIdInput.focus();
-                            return;
-                        }
-                        // Generate Order ID
-                        const orderId = generateOrderID();
-                        // Display Order Confirmation
-                        orderIdSpan.textContent = orderId;
-                        orderConfirmationDiv.style.display = 'block';
-                        // Optionally, you can clear the modal fields or perform other actions
-                        // For demonstration, we'll just show the order ID
-                        alert(`Payment confirmed via Bitcoin.\nTransaction ID: ${txid}\nOrder ID: ${orderId}\nThank you for your purchase!`);
-                        // Reset modal
-                        closeModal();
-                        // Optionally, reset the form
-                        populateModal(selectedProduct);
+                } else if (paymentMethod === 'cashapp') {
+                    const cashtagRegex = /^\$[A-Za-z0-9]{1,15}$/;
+                    if (!cashtagRegex.test(transactionId)) {
+                        alert('Please enter a valid Cash App Cashtag (e.g., $YourCashtag).');
+                        return;
                     }
+                }
+
+                // Get User IP
+                const userIP = await getUserIP();
+
+                // Generate Order ID
+                const orderId = generateOrderID();
+
+                // Store Order Details in localStorage
+                const order = {
+                    orderId,
+                    product: selectedProduct.name,
+                    price: selectedProduct.price,
+                    userIP,
+                    paymentMethod: paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1),
+                    transactionId
                 };
 
-                return { init };
-            })();
+                let orders = JSON.parse(localStorage.getItem('orders')) || [];
+                orders.push(order);
+                localStorage.setItem('orders', JSON.stringify(orders));
 
-            // ================================
-            // Initialization
-            // ================================
+                // Notify Admin (If Admin is Viewing Orders)
+                if (adminContent.style.display === 'block') {
+                    fetchOrders();
+                }
 
-            /**
-             * Initializes all components when the DOM is fully loaded.
-             */
-            const init = () => {
-                PasswordModal.init();
-                PaymentModal.init();
-            };
+                // Display Confirmation
+                alert(`Payment Confirmed!\n\nOrder ID: ${orderId}\nProduct: ${selectedProduct.name}\nPrice: $${selectedProduct.price}\nPayment Method: ${order.paymentMethod}\nTransaction/Cashtag: ${transactionId}`);
 
-            // Wait for the DOM to be fully loaded before initializing
-            document.addEventListener('DOMContentLoaded', init);
-        })();
+                // Close Modal and Reset
+                paymentModal.style.display = 'none';
+                resetPaymentModal();
+            });
+
+            // Function to Reset Payment Modal Fields
+            function resetPaymentModal() {
+                productName.innerText = '';
+                productPrice.innerText = '';
+                paymentInstructions.innerHTML = '';
+                paymentInstructions.style.display = 'none';
+                transactionIdLabel.style.display = 'none';
+                transactionIdInput.style.display = 'none';
+                transactionIdInput.value = '';
+                paymentOptions.forEach(option => option.checked = false);
+            }
+
+            // Function to Get User IP using external API
+            async function getUserIP() {
+                try {
+                    const response = await fetch('https://api.ipify.org?format=json');
+                    const data = await response.json();
+                    return data.ip;
+                } catch (error) {
+                    console.error('Error fetching IP:', error);
+                    return 'IP Not Available';
+                }
+            }
+
+            // Function to Generate Unique Order ID
+            function generateOrderID() {
+                return 'ORD-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            }
+
+            // Prevent closing payment modal with Esc key
+            window.addEventListener('keydown', function(event) {
+                if (event.key === "Escape") {
+                    if (paymentModal.style.display === 'block') {
+                        event.preventDefault();
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>
